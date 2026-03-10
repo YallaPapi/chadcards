@@ -10,29 +10,29 @@
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
 }
 
-/* Fixed pixel dimensions — every card is identical */
-.mtg-card-small { width: 250px; height: 350px; }
-.mtg-card-medium { width: 325px; height: 455px; }
-.mtg-card-large { width: 375px; height: 525px; }
+/* Fixed pixel dimensions — exact 5:7 ratio */
+.mtg-card-small { width: 200px; height: 280px; }
+.mtg-card-medium { width: 300px; height: 420px; }
+.mtg-card-large { width: 360px; height: 504px; }
 
 .card-frame {
   width: 100%;
   height: 100%;
   background: #1a1a1a;
-  border: 4px solid var(--frame-color);
-  border-radius: 10px;
+  border: 3px solid var(--frame-color);
+  border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.1);
   display: flex;
   flex-direction: column;
 }
 
-/* Header — compact */
+/* Header */
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 4px 8px;
+  padding: 3px 6px;
   background: linear-gradient(to bottom, rgba(255,255,255,0.08), transparent);
   border-bottom: 1px solid rgba(255,255,255,0.1);
   flex: 0 0 auto;
@@ -41,29 +41,29 @@
 .card-name {
   font-weight: 700;
   color: #e8e8e8;
-  font-size: 11px;
+  font-size: 9px;
   text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 70%;
+  max-width: 68%;
 }
 
 /* Mana symbols */
 .mana-cost {
   display: flex;
-  gap: 2px;
+  gap: 1px;
   flex-shrink: 0;
 }
 
 .mana-symbol {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 700;
   border: 1px solid rgba(0,0,0,0.4);
   box-shadow: 0 1px 2px rgba(0,0,0,0.3);
@@ -76,13 +76,13 @@
 .mana-r { background: #D3202A; color: #fff; }
 .mana-g { background: #00733E; color: #fff; }
 
-/* Art — dominant, ~50% of card */
+/* Art — dominant ~55% */
 .card-art {
-  margin: 3px 6px;
+  margin: 2px 5px;
   border: 2px solid rgba(255,255,255,0.1);
-  border-radius: 3px;
+  border-radius: 2px;
   overflow: hidden;
-  flex: 0 0 48%;
+  flex: 0 0 52%;
   background: #111;
 }
 
@@ -92,28 +92,28 @@
   object-fit: cover;
 }
 
-/* Type line — thin bar */
+/* Type line */
 .card-type {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 2px 8px;
+  padding: 1px 6px;
   background: linear-gradient(to bottom, rgba(255,255,255,0.05), transparent);
   border-top: 1px solid rgba(255,255,255,0.1);
   border-bottom: 1px solid rgba(255,255,255,0.1);
-  font-size: 8px;
+  font-size: 6.5px;
   color: #ccc;
   flex: 0 0 auto;
 }
 
 .rarity-symbol {
   color: var(--frame-color);
-  font-size: 10px;
+  font-size: 8px;
 }
 
-/* Text box — compact, overflow hidden */
+/* Text box — tight, clips overflow */
 .card-text-box {
-  padding: 4px 7px;
+  padding: 3px 5px;
   flex: 1;
   overflow: hidden;
   background: rgba(0,0,0,0.2);
@@ -127,10 +127,10 @@
 }
 
 .ability {
-  margin-bottom: 3px;
-  line-height: 1.25;
+  margin-bottom: 2px;
+  line-height: 1.2;
   color: #ddd;
-  font-size: 7.5px;
+  font-size: 6px;
 }
 
 .ability-cost {
@@ -144,17 +144,12 @@
   color: #e8e8e8;
 }
 
-.ability-dash {
-  color: #888;
-}
-
-.ability-rules {
-  color: #ccc;
-}
+.ability-dash { color: #888; }
+.ability-rules { color: #ccc; }
 
 .flavor-text {
   border-top: 1px solid rgba(255,255,255,0.08);
-  padding-top: 3px;
+  padding-top: 2px;
   margin-top: auto;
   flex-shrink: 0;
 }
@@ -162,9 +157,9 @@
 .flavor-quote {
   font-style: italic;
   color: #999;
-  font-size: 7px;
-  line-height: 1.25;
-  margin: 0 0 1px 0;
+  font-size: 5.5px;
+  line-height: 1.2;
+  margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -173,23 +168,23 @@
 
 .flavor-attribution {
   color: #777;
-  font-size: 6.5px;
+  font-size: 5px;
   text-align: right;
   margin: 0;
 }
 
-/* Footer — thin */
+/* Footer */
 .card-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 3px 8px;
+  padding: 2px 6px;
   border-top: 1px solid rgba(255,255,255,0.1);
   flex: 0 0 auto;
 }
 
 .card-url {
-  font-size: 6px;
+  font-size: 5px;
   color: #555;
   letter-spacing: 0.5px;
 }
@@ -198,9 +193,9 @@
   background: var(--frame-color);
   color: #111;
   font-weight: 800;
-  padding: 2px 7px;
+  padding: 1px 5px;
   border-radius: 3px;
-  font-size: 10px;
+  font-size: 8px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.4);
 }
 
@@ -213,24 +208,36 @@
   box-shadow: 0 0 30px rgba(255, 140, 0, 0.5), 0 8px 25px rgba(0, 0, 0, 0.5);
 }
 
-/* Size overrides */
-.mtg-card-medium .card-name { font-size: 13px; }
-.mtg-card-medium .mana-symbol { width: 19px; height: 19px; font-size: 10px; }
-.mtg-card-medium .card-type { font-size: 10px; }
-.mtg-card-medium .ability { font-size: 9px; }
-.mtg-card-medium .flavor-quote { font-size: 8.5px; }
-.mtg-card-medium .flavor-attribution { font-size: 8px; }
-.mtg-card-medium .card-pt { font-size: 12px; }
-.mtg-card-medium .card-url { font-size: 7px; }
+/* Medium overrides */
+.mtg-card-medium .card-frame { border-width: 4px; border-radius: 10px; }
+.mtg-card-medium .card-header { padding: 5px 8px; }
+.mtg-card-medium .card-name { font-size: 12px; }
+.mtg-card-medium .mana-symbol { width: 18px; height: 18px; font-size: 9px; }
+.mtg-card-medium .mana-cost { gap: 2px; }
+.mtg-card-medium .card-art { margin: 3px 6px; }
+.mtg-card-medium .card-type { font-size: 9px; padding: 2px 8px; }
+.mtg-card-medium .rarity-symbol { font-size: 10px; }
+.mtg-card-medium .card-text-box { padding: 5px 7px; }
+.mtg-card-medium .ability { font-size: 8.5px; margin-bottom: 3px; line-height: 1.3; }
+.mtg-card-medium .flavor-quote { font-size: 8px; }
+.mtg-card-medium .flavor-attribution { font-size: 7px; }
+.mtg-card-medium .card-footer { padding: 3px 8px; }
+.mtg-card-medium .card-pt { font-size: 11px; padding: 2px 7px; }
+.mtg-card-medium .card-url { font-size: 6px; }
 
-.mtg-card-large .card-name { font-size: 15px; }
-.mtg-card-large .mana-symbol { width: 22px; height: 22px; font-size: 11px; }
-.mtg-card-large .card-type { font-size: 11px; }
-.mtg-card-large .ability { font-size: 10.5px; }
-.mtg-card-large .flavor-quote { font-size: 10px; }
-.mtg-card-large .flavor-attribution { font-size: 9px; }
-.mtg-card-large .card-pt { font-size: 14px; }
-.mtg-card-large .card-url { font-size: 8px; }
+/* Large overrides */
+.mtg-card-large .card-frame { border-width: 5px; border-radius: 12px; }
 .mtg-card-large .card-header { padding: 6px 10px; }
-.mtg-card-large .card-text-box { padding: 6px 9px; }
+.mtg-card-large .card-name { font-size: 14px; }
+.mtg-card-large .mana-symbol { width: 20px; height: 20px; font-size: 10px; }
+.mtg-card-large .mana-cost { gap: 2px; }
+.mtg-card-large .card-art { margin: 3px 7px; }
+.mtg-card-large .card-type { font-size: 10px; padding: 3px 10px; }
 .mtg-card-large .rarity-symbol { font-size: 12px; }
+.mtg-card-large .card-text-box { padding: 5px 9px; }
+.mtg-card-large .ability { font-size: 10px; margin-bottom: 4px; line-height: 1.3; }
+.mtg-card-large .flavor-quote { font-size: 9px; line-height: 1.3; }
+.mtg-card-large .flavor-attribution { font-size: 8px; }
+.mtg-card-large .card-footer { padding: 4px 10px; }
+.mtg-card-large .card-pt { font-size: 13px; padding: 2px 8px; }
+.mtg-card-large .card-url { font-size: 7px; }
