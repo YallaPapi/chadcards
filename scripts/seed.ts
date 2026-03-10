@@ -1,15 +1,4 @@
-import { PrismaLibSql } from '@prisma/adapter-libsql'
-import { PrismaClient } from '../src/generated/prisma/client'
-
-function createPrismaClient() {
-  const adapter = new PrismaLibSql({
-    url: process.env.TURSO_DATABASE_URL || 'file:./prisma/dev.db',
-    authToken: process.env.TURSO_AUTH_TOKEN,
-  })
-  return new PrismaClient({ adapter })
-}
-
-const prisma = createPrismaClient()
+import 'dotenv/config'
 
 const LAUNCH_DECK = [
   { name: 'Donald Trump', category: 'politician' },
@@ -40,14 +29,7 @@ async function seed() {
   console.log('Estimated time: ~5-10 minutes.\n')
 
   for (let i = 0; i < LAUNCH_DECK.length; i++) {
-    const { name, category } = LAUNCH_DECK[i]
-
-    // Skip if already exists
-    const existing = await prisma.card.findUnique({ where: { name } })
-    if (existing) {
-      console.log(`[${i + 1}/20] SKIP: ${name} (already exists)`)
-      continue
-    }
+    const { name } = LAUNCH_DECK[i]
 
     try {
       console.log(`[${i + 1}/20] Generating: ${name}...`)
@@ -76,7 +58,6 @@ async function seed() {
   }
 
   console.log('\nSeed complete!')
-  await prisma.$disconnect()
 }
 
 seed()

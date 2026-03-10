@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import Card from '@/components/Card'
+import CardDetailActions from '@/components/CardDetailActions'
 
 export default async function CardPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -29,22 +30,11 @@ export default async function CardPage({ params }: { params: Promise<{ id: strin
 
   return (
     <div className="flex flex-col items-center">
-      <Card card={card} size="xlarge" />
-
-      <div className="mt-8 flex gap-4">
-        <button
-          className="px-6 py-3 bg-[#c9a94e] text-black font-semibold rounded-lg hover:bg-[#d4b85a] transition-colors"
-          id="download-btn"
-        >
-          Download as PNG
-        </button>
-        <a
-          href="/"
-          className="px-6 py-3 bg-white/5 text-gray-300 rounded-lg hover:bg-white/10 transition-colors"
-        >
-          Back to Gallery
-        </a>
+      <div id="card-download-target">
+        <Card card={card} size="xlarge" />
       </div>
+
+      <CardDetailActions cardName={card.name} />
 
       {/* Card stats */}
       <div className="mt-8 grid grid-cols-2 gap-4 max-w-md w-full">

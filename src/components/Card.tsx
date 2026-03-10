@@ -87,7 +87,7 @@ export default function Card({ card, size = 'medium', onClick }: CardProps) {
 
           {/* Art window */}
           <div className="card-art">
-            <img src={card.art_url} alt={card.name} loading="lazy" />
+            <img src={card.art_url} alt={card.name} loading="lazy" crossOrigin="anonymous" />
           </div>
 
           {/* Type line */}
