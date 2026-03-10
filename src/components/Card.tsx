@@ -11,9 +11,9 @@ interface CardProps {
 }
 
 const FONT_LIMITS = {
-  small:  { min: 4, max: 8 },
-  medium: { min: 6, max: 12 },
-  large:  { min: 7, max: 14 },
+  small:  { min: 5, max: 12 },
+  medium: { min: 7, max: 16 },
+  large:  { min: 9, max: 20 },
 }
 
 function ManaCost({ cost, colors }: { cost: number; colors: string[] }) {
