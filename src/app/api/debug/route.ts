@@ -1,26 +1,48 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@libsql/client/web'
 
 export async function GET() {
   const url = process.env.TURSO_DATABASE_URL || 'NOT SET'
   const token = process.env.TURSO_AUTH_TOKEN || 'NOT SET'
+  const httpUrl = url.replace('libsql://', 'https://')
 
-  // Test raw libsql web connection
-  let dbTest = 'not tested'
+  // Test 1: Raw fetch to Turso HTTP API
+  let rawTest = 'not tested'
   try {
-    // Web client needs https:// not libsql://
-    const httpUrl = url.replace('libsql://', 'https://')
+    const res = await fetch(`${httpUrl}/v2/pipeline`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        requests: [
+          { type: 'execute', stmt: { sql: 'SELECT COUNT(*) as cnt FROM Card' } },
+          { type: 'close' },
+        ],
+      }),
+    })
+    const data = await res.json()
+    rawTest = `OK (${res.status}): ${JSON.stringify(data).substring(0, 200)}`
+  } catch (e: any) {
+    rawTest = `ERROR: ${e.message}`
+  }
+
+  // Test 2: libsql web client
+  let libsqlTest = 'not tested'
+  try {
+    const { createClient } = await import('@libsql/client/web')
     const client = createClient({ url: httpUrl, authToken: token })
     const result = await client.execute('SELECT COUNT(*) as cnt FROM Card')
-    dbTest = `OK: ${JSON.stringify(result.rows)}`
+    libsqlTest = `OK: ${JSON.stringify(result.rows)}`
   } catch (e: any) {
-    dbTest = `ERROR: ${e.message}`
+    libsqlTest = `ERROR: ${e.message} | ${e.stack?.substring(0, 200)}`
   }
 
   return NextResponse.json({
     tursoUrl: url.substring(0, 40),
-    tursoUrlLen: url.length,
-    dbTest,
+    httpUrl: httpUrl.substring(0, 40),
+    rawTest,
+    libsqlTest,
     nodeEnv: process.env.NODE_ENV,
   })
 }
