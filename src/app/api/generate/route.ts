@@ -2,17 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getPersonSummary } from '@/lib/wikipedia'
 import { generateCardText, generateCardArt } from '@/lib/grok'
-
-// Category detection based on Wikipedia description
-function detectCategory(description: string, summary: string): string {
-  const text = `${description} ${summary}`.toLowerCase()
-  if (text.match(/politician|president|senator|congress|governor|minister|political/)) return 'politician'
-  if (text.match(/entrepreneur|ceo|founder|technology|software|computer|engineer/)) return 'tech'
-  if (text.match(/actor|actress|singer|musician|rapper|entertainer|comedian|director|artist|model/)) return 'entertainer'
-  if (text.match(/athlete|player|football|basketball|soccer|tennis|boxer|mma|fighter/)) return 'athlete'
-  if (text.match(/youtuber|influencer|streamer|internet|tikto|podcast/)) return 'internet'
-  return 'other'
-}
+import { detectCategory } from '@/lib/card-generation'
 
 export async function POST(request: NextRequest) {
   try {

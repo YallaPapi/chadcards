@@ -2,6 +2,7 @@
 
 import { Card as CardType, getCardTheme, MANA_SYMBOL_COLORS, RARITY_COLORS, MTG_COLOR_THEMES, MtgColor } from '@/types/card'
 import { AutoTextSize } from 'auto-text-size'
+import { getCardArtUrl } from '@/lib/card-art'
 import './Card.css'
 
 interface CardProps {
@@ -61,6 +62,7 @@ export default function Card({ card, size = 'medium', onClick }: CardProps) {
   const theme = getCardTheme(card.colors)
   const limits = FONT_LIMITS[size]
   const rarityClass = `rarity-${card.rarity}`
+  const artUrl = getCardArtUrl(card.art_url)
 
   const cssVars = {
     '--frame-color': theme.frame,
@@ -87,7 +89,7 @@ export default function Card({ card, size = 'medium', onClick }: CardProps) {
 
           {/* Art window */}
           <div className="card-art">
-            <img src={card.art_url} alt={card.name} loading="lazy" crossOrigin="anonymous" />
+            <img src={artUrl} alt={card.name} loading="lazy" />
           </div>
 
           {/* Type line */}

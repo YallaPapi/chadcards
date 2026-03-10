@@ -1,5 +1,6 @@
 import OpenAI from 'openai'
 import { CardData } from '@/types/card'
+import { validateGeneratedCardData } from '@/lib/card-generation'
 
 const client = new OpenAI({
   apiKey: process.env.GROK_API_KEY,
@@ -25,6 +26,8 @@ RULES:
 - Keep it as parody/satire — funny and sharp, never hateful
 - Generate 2-3 abilities
 - IMPORTANT: Keep each ability's rules_text under 80 characters. Be concise.
+- NEVER use fake game vocabulary like "memes", "fame", "interrupt", "silence target", or "skip a turn".
+- Use only card-like actions such as create, draw, discard, exile, destroy, counter, tap, untap, gain, lose, return, and get +N/+N.
 
 Return ONLY valid JSON matching this exact schema:
 {
@@ -45,30 +48,36 @@ Return ONLY valid JSON matching this exact schema:
 }`
 
 export async function generateCardText(name: string, summary: string): Promise<CardData> {
-  const response = await client.chat.completions.create({
-    model: 'grok-3',
-    messages: [
-      { role: 'system', content: CARD_SYSTEM_PROMPT },
-      { role: 'user', content: `Generate a trading card for this person:\n\nName: ${name}\n\nWikipedia summary:\n${summary}` },
-    ],
-    temperature: 0.9,
-  })
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const extraGuidance = attempt === 0
+      ? ''
+      : '\n\nPrevious output was rejected. Keep the rules text simpler and strictly card-like.'
 
-  const content = response.choices[0]?.message?.content
-  if (!content) throw new Error('No response from Grok')
+    const response = await client.chat.completions.create({
+      model: 'grok-3',
+      messages: [
+        { role: 'system', content: CARD_SYSTEM_PROMPT },
+        { role: 'user', content: `Generate a trading card for this person:\n\nName: ${name}\n\nWikipedia summary:\n${summary}${extraGuidance}` },
+      ],
+      temperature: 0.9,
+    })
 
-  // Extract JSON from response (handle markdown code blocks)
-  const jsonMatch = content.match(/\{[\s\S]*\}/)
-  if (!jsonMatch) throw new Error('No JSON found in Grok response')
+    const content = response.choices[0]?.message?.content
+    if (!content) throw new Error('No response from Grok')
 
-  const parsed = JSON.parse(jsonMatch[0]) as CardData
+    const jsonMatch = content.match(/\{[\s\S]*\}/)
+    if (!jsonMatch) throw new Error('No JSON found in Grok response')
 
-  // Validate required fields
-  if (!parsed.name || !parsed.colors || !parsed.abilities) {
-    throw new Error('Invalid card data from Grok')
+    const parsed = JSON.parse(jsonMatch[0]) as CardData
+
+    try {
+      return validateGeneratedCardData(parsed)
+    } catch (error) {
+      if (attempt === 2) throw error
+    }
   }
 
-  return parsed
+  throw new Error('Failed to generate valid card data from Grok')
 }
 
 export async function generateCardArt(artDescription: string): Promise<string> {
