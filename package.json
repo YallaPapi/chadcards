@@ -16,6 +16,7 @@
     "@libsql/client": "^0.17.0",
     "@prisma/adapter-libsql": "^7.4.2",
     "@prisma/client": "^7.4.2",
+    "auto-text-size": "^0.2.3",
     "html2canvas": "^1.4.1",
     "next": "16.1.6",
     "openai": "^6.27.0",

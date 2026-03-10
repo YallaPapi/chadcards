@@ -1,12 +1,19 @@
 'use client'
 
 import { Card as CardType, getCardFrameColor, MTG_COLORS, MtgColor } from '@/types/card'
+import { AutoTextSize } from 'auto-text-size'
 import './Card.css'
 
 interface CardProps {
   card: CardType
   size?: 'small' | 'medium' | 'large'
   onClick?: () => void
+}
+
+const FONT_LIMITS = {
+  small:  { min: 4, max: 7 },
+  medium: { min: 5, max: 10 },
+  large:  { min: 6, max: 12 },
 }
 
 function ManaCost({ cost, colors }: { cost: number; colors: string[] }) {
@@ -42,8 +49,7 @@ function AbilityText({ ability }: { ability: { name: string; cost: string | null
 
 export default function Card({ card, size = 'medium', onClick }: CardProps) {
   const frameColor = getCardFrameColor(card.colors)
-  const maxAbilities = size === 'small' ? 1 : size === 'medium' ? 2 : card.abilities.length
-  const showFlavor = size !== 'small'
+  const limits = FONT_LIMITS[size]
 
   return (
     <div
@@ -69,19 +75,21 @@ export default function Card({ card, size = 'medium', onClick }: CardProps) {
           <span className="rarity-symbol">{card.rarity === 'mythic' ? '★' : card.rarity === 'rare' ? '◆' : '●'}</span>
         </div>
 
-        {/* Text box */}
+        {/* Text box — auto-scaled to fit */}
         <div className="card-text-box">
-          <div className="abilities">
-            {card.abilities.slice(0, maxAbilities).map((a, i) => (
-              <AbilityText key={i} ability={a} />
-            ))}
-          </div>
-          {showFlavor && (
-            <div className="flavor-text">
-              <p className="flavor-quote">&ldquo;{card.flavor_text}&rdquo;</p>
-              <p className="flavor-attribution">{card.flavor_attribution}</p>
+          <AutoTextSize mode="box" minFontSizePx={limits.min} maxFontSizePx={limits.max}>
+            <div className="card-text-box-inner">
+              <div className="abilities">
+                {card.abilities.map((a, i) => (
+                  <AbilityText key={i} ability={a} />
+                ))}
+              </div>
+              <div className="flavor-text">
+                <p className="flavor-quote">&ldquo;{card.flavor_text}&rdquo;</p>
+                <p className="flavor-attribution">{card.flavor_attribution}</p>
+              </div>
             </div>
-          )}
+          </AutoTextSize>
         </div>
 
         {/* Footer: P/T + URL */}
