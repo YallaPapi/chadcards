@@ -15,6 +15,7 @@
 .mtg-card-small { width: 200px; height: 280px; }
 .mtg-card-medium { width: 300px; height: 420px; }
 .mtg-card-large { width: 360px; height: 504px; }
+.mtg-card-xlarge { width: 500px; height: 700px; }
 
 /* Outer card — black border */
 .card-frame {
@@ -273,3 +274,20 @@
 .mtg-card-large .card-footer { padding: 0 8px 4px 8px; margin: 0 5px 4px 5px; }
 .mtg-card-large .card-pt { font-size: 16px; padding: 4px 12px; border-width: 2px; top: -12px; }
 .mtg-card-large .card-url { font-size: 7px; }
+
+/* ============ XLarge overrides (detail page) ============ */
+.mtg-card-xlarge .card-frame { border-radius: 14px; padding: 8px; }
+.mtg-card-xlarge .card-inner { border-radius: 7px; }
+.mtg-card-xlarge .card-header { padding: 8px 14px; margin: 6px 6px 0 6px; border-radius: 6px 6px 0 0; }
+.mtg-card-xlarge .card-name { font-size: 20px; }
+.mtg-card-xlarge .mana-symbol { width: 28px; height: 28px; font-size: 14px; }
+.mtg-card-xlarge .mana-cost { gap: 3px; }
+.mtg-card-xlarge .card-art { margin: 2px 3px; }
+.mtg-card-xlarge .card-type { font-size: 14px; padding: 4px 14px; margin: 2px 6px; }
+.mtg-card-xlarge .rarity-symbol { font-size: 16px; }
+.mtg-card-xlarge .card-text-box { margin: 2px 6px; padding: 8px 12px; }
+.mtg-card-xlarge .ability { margin-bottom: 6px; line-height: 1.35; }
+.mtg-card-xlarge .flavor-separator { margin: 8px auto; }
+.mtg-card-xlarge .card-footer { padding: 0 10px 6px 10px; margin: 0 6px 6px 6px; }
+.mtg-card-xlarge .card-pt { font-size: 20px; padding: 5px 14px; border-width: 2px; top: -14px; }
+.mtg-card-xlarge .card-url { font-size: 8px; }

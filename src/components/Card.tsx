@@ -6,7 +6,7 @@ import './Card.css'
 
 interface CardProps {
   card: CardType
-  size?: 'small' | 'medium' | 'large'
+  size?: 'small' | 'medium' | 'large' | 'xlarge'
   onClick?: () => void
 }
 
@@ -14,6 +14,7 @@ const FONT_LIMITS = {
   small:  { min: 5, max: 12 },
   medium: { min: 7, max: 16 },
   large:  { min: 9, max: 20 },
+  xlarge: { min: 10, max: 24 },
 }
 
 function ManaCost({ cost, colors }: { cost: number; colors: string[] }) {

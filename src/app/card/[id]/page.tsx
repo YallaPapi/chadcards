@@ -29,7 +29,7 @@ export default async function CardPage({ params }: { params: Promise<{ id: strin
 
   return (
     <div className="flex flex-col items-center">
-      <Card card={card} size="large" />
+      <Card card={card} size="xlarge" />
 
       <div className="mt-8 flex gap-4">
         <button
