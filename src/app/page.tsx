@@ -1,65 +1,80 @@
-import Image from "next/image";
+import CardGrid from '@/components/CardGrid'
+import { prisma } from '@/lib/db'
 
-export default function Home() {
+async function getCards(searchParams: { category?: string; color?: string; rarity?: string; sort?: string }) {
+  const where: any = {}
+  if (searchParams.category) where.category = searchParams.category
+  if (searchParams.rarity) where.rarity = searchParams.rarity
+  if (searchParams.color) where.colors = { contains: searchParams.color }
+
+  const orderBy: any = {}
+  const sort = searchParams.sort || 'createdAt'
+  if (sort === 'power') orderBy.power = 'desc'
+  else if (sort === 'toughness') orderBy.toughness = 'desc'
+  else if (sort === 'manaCost') orderBy.manaCost = 'desc'
+  else orderBy.createdAt = 'desc'
+
+  const cards = await prisma.card.findMany({ where, orderBy })
+  return cards.map((c) => ({
+    id: c.id,
+    name: c.name,
+    mana_cost: c.manaCost,
+    colors: JSON.parse(c.colors),
+    type_line: c.typeLine,
+    abilities: JSON.parse(c.abilities),
+    flavor_text: c.flavorText,
+    flavor_attribution: c.flavorAttribution,
+    power: c.power,
+    toughness: c.toughness,
+    rarity: c.rarity as 'mythic' | 'rare' | 'uncommon',
+    art_url: c.artUrl,
+    art_description: c.artDescription,
+    category: c.category,
+    created_at: c.createdAt.toISOString(),
+    updated_at: c.updatedAt.toISOString(),
+  }))
+}
+
+export default async function Home({ searchParams }: { searchParams: Promise<{ [key: string]: string | undefined }> }) {
+  const params = await searchParams
+  const cards = await getCards(params)
+
+  const categories = ['all', 'politician', 'tech', 'entertainer', 'athlete', 'internet']
+  const currentCategory = params.category || 'all'
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
+    <div>
+      <div className="text-center mb-10">
+        <h1 className="text-4xl font-bold mb-2" style={{ color: '#c9a94e' }}>
+          The Gallery
+        </h1>
+        <p className="text-gray-500">AI-generated trading cards for the world&apos;s most infamous public figures</p>
+      </div>
+
+      {/* Category filters */}
+      <div className="flex flex-wrap justify-center gap-3 mb-8">
+        {categories.map((cat) => (
           <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            key={cat}
+            href={cat === 'all' ? '/' : `/?category=${cat}`}
+            className={`px-4 py-2 rounded-full text-sm transition-colors ${
+              currentCategory === cat
+                ? 'bg-[#c9a94e] text-black font-semibold'
+                : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+            }`}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
+            {cat.charAt(0).toUpperCase() + cat.slice(1)}
           </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+        ))}
+      </div>
+
+      <CardGrid cards={cards} />
+
+      {/* Disclaimer */}
+      <p className="text-center text-gray-600 text-xs mt-16">
+        This is a parody. Not affiliated with Wizards of the Coast, Hasbro, or any depicted individual.
+        All art is AI-generated. For entertainment purposes only.
+      </p>
     </div>
-  );
+  )
 }
