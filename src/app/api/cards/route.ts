@@ -20,13 +20,21 @@ export async function GET(request: NextRequest) {
   else if (sort === 'manaCost') orderBy.manaCost = order
   else orderBy.createdAt = order
 
-  const cards = await prisma.card.findMany({ where, orderBy })
+  try {
+    const cards = await prisma.card.findMany({ where, orderBy })
 
-  return NextResponse.json(
-    cards.map((c) => ({
-      ...c,
-      colors: JSON.parse(c.colors),
-      abilities: JSON.parse(c.abilities),
-    }))
-  )
+    return NextResponse.json(
+      cards.map((c) => ({
+        ...c,
+        colors: JSON.parse(c.colors),
+        abilities: JSON.parse(c.abilities),
+      }))
+    )
+  } catch (error: any) {
+    console.error('Cards API error:', error)
+    return NextResponse.json(
+      { error: error.message, stack: error.stack },
+      { status: 500 }
+    )
+  }
 }
