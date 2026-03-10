@@ -42,6 +42,8 @@ function AbilityText({ ability }: { ability: { name: string; cost: string | null
 
 export default function Card({ card, size = 'medium', onClick }: CardProps) {
   const frameColor = getCardFrameColor(card.colors)
+  const maxAbilities = size === 'small' ? 1 : size === 'medium' ? 2 : card.abilities.length
+  const showFlavor = size !== 'small'
 
   return (
     <div
@@ -70,14 +72,16 @@ export default function Card({ card, size = 'medium', onClick }: CardProps) {
         {/* Text box */}
         <div className="card-text-box">
           <div className="abilities">
-            {card.abilities.map((a, i) => (
+            {card.abilities.slice(0, maxAbilities).map((a, i) => (
               <AbilityText key={i} ability={a} />
             ))}
           </div>
-          <div className="flavor-text">
-            <p className="flavor-quote">&ldquo;{card.flavor_text}&rdquo;</p>
-            <p className="flavor-attribution">{card.flavor_attribution}</p>
-          </div>
+          {showFlavor && (
+            <div className="flavor-text">
+              <p className="flavor-quote">&ldquo;{card.flavor_text}&rdquo;</p>
+              <p className="flavor-attribution">{card.flavor_attribution}</p>
+            </div>
+          )}
         </div>
 
         {/* Footer: P/T + URL */}
