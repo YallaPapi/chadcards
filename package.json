@@ -11,7 +11,9 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@prisma/adapter-better-sqlite3": "^7.4.2",
     "@prisma/client": "^7.4.2",
+    "better-sqlite3": "^12.6.2",
     "html2canvas": "^1.4.1",
     "next": "16.1.6",
     "openai": "^6.27.0",

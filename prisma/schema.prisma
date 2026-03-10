@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Card {
+  id                String   @id @default(cuid())
+  name              String   @unique
+  manaCost          Int
+  colors            String   // JSON array: ["Blue","Black"]
+  typeLine          String
+  abilities         String   // JSON array of {name, cost, rules_text}
+  flavorText        String
+  flavorAttribution String
+  power             Int
+  toughness         Int
+  rarity            String   // mythic, rare, uncommon
+  artUrl            String   // path in public/cards/ or external URL
+  artDescription    String
+  category          String   // politician, tech, entertainer, athlete, internet
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
