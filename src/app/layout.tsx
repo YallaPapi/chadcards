@@ -18,6 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <div className="flex gap-6">
               <a href="/" className="text-gray-400 hover:text-white transition-colors">Gallery</a>
               <a href="/generate" className="text-gray-400 hover:text-white transition-colors">Generate</a>
+              <a href="/events" className="text-gray-400 hover:text-white transition-colors">Events</a>
             </div>
           </div>
         </nav>

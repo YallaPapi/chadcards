@@ -39,7 +39,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ [
   const params = await searchParams
   const cards = await getCards(params)
 
-  const categories = ['all', 'politician', 'tech', 'entertainer', 'athlete', 'internet']
+  const categories = ['all', 'politician', 'tech', 'entertainer', 'athlete', 'internet', 'event']
   const currentCategory = params.category || 'all'
 
   return (

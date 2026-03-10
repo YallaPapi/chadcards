@@ -84,3 +84,87 @@ export async function generateCardArt(artDescription: string): Promise<string> {
 
   return url
 }
+
+const EVENT_SYSTEM_PROMPT = `You are a satirical trading card game designer creating Magic: The Gathering-style cards for CURRENT NEWS EVENTS. You write sharp, funny, topical content.
+
+RULES:
+- The card represents a major news event, not a person
+- Type should be "Sorcery", "Instant", or "Enchantment" (not Creature) — pick what fits:
+  - Sorcery: One-time events (bombings, elections, announcements)
+  - Instant: Breaking news, sudden events
+  - Enchantment: Ongoing situations (wars, economic trends, pandemics)
+- Abilities should reference the real-world impacts of the event in MTG rules-speak
+- Flavor text should be a satirical take on the event
+- Mana cost 1-10 based on how impactful/world-changing the event is
+- Color identity based on the nature of the event:
+  White: Government/institutional actions, peace deals
+  Blue: Technology, intelligence, manipulation
+  Black: Death, destruction, corruption, power grabs
+  Red: War, chaos, destruction, passion
+  Green: Environmental, growth, natural events
+  Multi-color for complex events
+- Keep it as parody/satire — funny and sharp, never hateful or celebrating tragedy
+
+Return ONLY valid JSON matching this exact schema:
+{
+  "name": "Event Name",
+  "mana_cost": 5,
+  "colors": ["Red", "Black"],
+  "type_line": "Sorcery",
+  "abilities": [
+    {"name": "Ability Name", "cost": null, "rules_text": "MTG rules text describing the event's effect"}
+  ],
+  "flavor_text": "Satirical quote about the event",
+  "flavor_attribution": "— Source",
+  "power": 0,
+  "toughness": 0,
+  "rarity": "mythic",
+  "art_description": "2-3 sentence description of card art depicting the event in dramatic fantasy oil painting style"
+}`
+
+export async function generateEventCard(eventDescription: string): Promise<CardData> {
+  const response = await client.chat.completions.create({
+    model: 'grok-3',
+    messages: [
+      { role: 'system', content: EVENT_SYSTEM_PROMPT },
+      { role: 'user', content: `Generate a trading card for this current event:\n\n${eventDescription}` },
+    ],
+    temperature: 0.9,
+  })
+
+  const content = response.choices[0]?.message?.content
+  if (!content) throw new Error('No response from Grok')
+
+  const jsonMatch = content.match(/\{[\s\S]*\}/)
+  if (!jsonMatch) throw new Error('No JSON found in Grok response')
+
+  const parsed = JSON.parse(jsonMatch[0]) as CardData
+  if (!parsed.name || !parsed.colors || !parsed.abilities) {
+    throw new Error('Invalid event card data from Grok')
+  }
+
+  // Events don't have P/T (they're not creatures)
+  parsed.power = 0
+  parsed.toughness = 0
+
+  return parsed
+}
+
+export async function getTrendingEvents(): Promise<string[]> {
+  const response = await client.chat.completions.create({
+    model: 'grok-3',
+    messages: [
+      { role: 'system', content: 'You are a news analyst. Return ONLY a JSON array of 10 current major news events happening right now. Each should be a short description (1-2 sentences). Focus on the biggest, most viral, most meme-worthy events. Include a mix of politics, tech, entertainment, sports, and world events.' },
+      { role: 'user', content: 'What are the top 10 biggest news events happening right now?' },
+    ],
+    temperature: 0.7,
+  })
+
+  const content = response.choices[0]?.message?.content
+  if (!content) throw new Error('No response from Grok')
+
+  const jsonMatch = content.match(/\[[\s\S]*\]/)
+  if (!jsonMatch) throw new Error('No JSON array found in Grok response')
+
+  return JSON.parse(jsonMatch[0]) as string[]
+}
