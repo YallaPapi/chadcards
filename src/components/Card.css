@@ -1,5 +1,5 @@
-/* MTG Card — M15 Frame Accurate (5:7 ratio, 63x88mm) */
-/* All proportions measured from real Scryfall 745x1040 PNGs */
+/* Card — M15 Frame Accurate (5:7 ratio, 63x88mm) */
+/* Proportions measured from real Scryfall 745x1040 PNGs */
 
 .mtg-card {
   cursor: pointer;
@@ -16,7 +16,7 @@
 .mtg-card-medium { width: 300px; height: 420px; }
 .mtg-card-large { width: 360px; height: 504px; }
 
-/* Outer card — black border like real MTG */
+/* Outer card — black border */
 .card-frame {
   width: 100%;
   height: 100%;
@@ -29,7 +29,7 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
 }
 
-/* Inner colored frame — sits inside the black border */
+/* Inner colored frame */
 .card-inner {
   flex: 1;
   display: flex;
@@ -92,9 +92,9 @@
 .mana-r { background: #E49977; color: #0D0F0F; }
 .mana-g { background: #A3C095; color: #0D0F0F; }
 
-/* ---- Art window — 41% like real MTG ---- */
+/* ---- Art window — 41%, tight to frame edges ---- */
 .card-art {
-  margin: 2px 3px;
+  margin: 1px 3px;
   border: 1px solid rgba(0,0,0,0.3);
   overflow: hidden;
   flex: 0 0 41%;
@@ -112,10 +112,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1px 6px;
+  padding: 2px 6px;
   background: var(--textbox-color);
   border: 1px solid rgba(0,0,0,0.15);
-  margin: 0 3px;
+  margin: 1px 3px;
   font-size: 6.5px;
   color: var(--text-color);
   flex: 0 0 auto;
@@ -132,9 +132,9 @@
 .rarity-rare { color: #A58E4A; }
 .rarity-mythic { color: #BF4427; }
 
-/* ---- Text box — light parchment like real MTG ---- */
+/* ---- Text box — light parchment, P/T overlaps bottom-right ---- */
 .card-text-box {
-  margin: 2px 3px;
+  margin: 1px 3px;
   padding: 3px 5px;
   flex: 1;
   overflow: hidden;
@@ -175,7 +175,7 @@
   color: var(--text-color);
 }
 
-/* Flavor separator — decorative centered rule like real MTG */
+/* Flavor separator — decorative centered rule */
 .flavor-separator {
   width: 50%;
   margin: 4px auto;
@@ -199,14 +199,15 @@
   opacity: 0.7;
 }
 
-/* ---- Footer ---- */
+/* ---- Footer — URL sits on the frame, P/T overlaps textbox ---- */
 .card-footer {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 1px 4px;
+  align-items: flex-end;
+  padding: 0 4px 2px 4px;
   margin: 0 3px 2px 3px;
   flex: 0 0 auto;
+  position: relative;
 }
 
 .card-url {
@@ -215,20 +216,22 @@
   letter-spacing: 0.5px;
 }
 
-/* P/T box — distinct darker shade with border like real MTG */
+/* P/T box — overlaps bottom-right of text box like real cards */
 .card-pt {
   background: var(--pt-bg);
   color: var(--pt-text);
   font-weight: 800;
-  padding: 1px 5px;
+  padding: 2px 6px;
   border-radius: 3px;
-  font-size: 8px;
+  font-size: 9px;
   border: 1px solid rgba(0,0,0,0.4);
   box-shadow: 0 1px 3px rgba(0,0,0,0.3);
   font-family: "Cinzel", "EB Garamond", "Garamond", serif;
+  position: relative;
+  top: -4px;
 }
 
-/* ---- Mythic glow (orange like mythic rarity) ---- */
+/* ---- Mythic glow ---- */
 .mythic-glow .card-frame {
   box-shadow: 0 0 20px rgba(191, 68, 39, 0.3), 0 4px 15px rgba(0, 0, 0, 0.6);
 }
@@ -244,14 +247,14 @@
 .mtg-card-medium .card-name { font-size: 13px; }
 .mtg-card-medium .mana-symbol { width: 18px; height: 18px; font-size: 10px; }
 .mtg-card-medium .mana-cost { gap: 2px; }
-.mtg-card-medium .card-art { margin: 2px 4px; }
-.mtg-card-medium .card-type { font-size: 9px; padding: 2px 8px; margin: 0 4px; }
+.mtg-card-medium .card-art { margin: 1px 4px; }
+.mtg-card-medium .card-type { font-size: 9px; padding: 3px 8px; margin: 1px 4px; }
 .mtg-card-medium .rarity-symbol { font-size: 10px; }
-.mtg-card-medium .card-text-box { margin: 2px 4px; padding: 5px 7px; }
+.mtg-card-medium .card-text-box { margin: 1px 4px; padding: 5px 7px; }
 .mtg-card-medium .ability { margin-bottom: 3px; line-height: 1.3; }
 .mtg-card-medium .flavor-separator { margin: 5px auto; }
-.mtg-card-medium .card-footer { padding: 2px 6px; margin: 0 4px 3px 4px; }
-.mtg-card-medium .card-pt { font-size: 12px; padding: 2px 7px; }
+.mtg-card-medium .card-footer { padding: 0 6px 3px 6px; margin: 0 4px 3px 4px; }
+.mtg-card-medium .card-pt { font-size: 12px; padding: 2px 8px; top: -6px; }
 .mtg-card-medium .card-url { font-size: 6px; }
 
 /* ============ Large overrides ============ */
@@ -261,12 +264,12 @@
 .mtg-card-large .card-name { font-size: 15px; }
 .mtg-card-large .mana-symbol { width: 22px; height: 22px; font-size: 11px; }
 .mtg-card-large .mana-cost { gap: 2px; }
-.mtg-card-large .card-art { margin: 2px 5px; }
-.mtg-card-large .card-type { font-size: 11px; padding: 3px 10px; margin: 0 5px; }
+.mtg-card-large .card-art { margin: 1px 5px; }
+.mtg-card-large .card-type { font-size: 11px; padding: 3px 10px; margin: 1px 5px; }
 .mtg-card-large .rarity-symbol { font-size: 12px; }
-.mtg-card-large .card-text-box { margin: 2px 5px; padding: 6px 9px; }
+.mtg-card-large .card-text-box { margin: 1px 5px; padding: 6px 9px; }
 .mtg-card-large .ability { margin-bottom: 4px; line-height: 1.3; }
 .mtg-card-large .flavor-separator { margin: 6px auto; }
-.mtg-card-large .card-footer { padding: 3px 8px; margin: 0 5px 4px 5px; }
-.mtg-card-large .card-pt { font-size: 14px; padding: 2px 8px; }
+.mtg-card-large .card-footer { padding: 0 8px 4px 8px; margin: 0 5px 4px 5px; }
+.mtg-card-large .card-pt { font-size: 14px; padding: 3px 10px; top: -8px; }
 .mtg-card-large .card-url { font-size: 7px; }

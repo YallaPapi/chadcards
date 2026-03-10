@@ -6,10 +6,10 @@ const client = new OpenAI({
   baseURL: 'https://api.x.ai/v1',
 })
 
-const CARD_SYSTEM_PROMPT = `You are a satirical trading card game designer creating Magic: The Gathering-style cards for real public figures. You write sharp, funny, but not cruel content.
+const CARD_SYSTEM_PROMPT = `You are a satirical trading card game designer creating collectible cards for real public figures. You write sharp, funny, but not cruel content.
 
 RULES:
-- Abilities must be written in authentic MTG rules-speak (tap symbols, keywords, etc.)
+- Abilities must use proper trading card game rules-speak (tap symbols, keywords, etc.)
 - Each ability name should be a clever reference to something the person is known for
 - Flavor text should be either a real quote twisted satirically, or an original satirical quote
 - Power/Toughness should reflect real-world influence (Power) and resilience (Toughness) on a 0-10 scale
@@ -24,6 +24,7 @@ RULES:
 - Type should be "Legendary Creature — [Funny Class] [Funny Subclass]"
 - Keep it as parody/satire — funny and sharp, never hateful
 - Generate 2-3 abilities
+- IMPORTANT: Keep each ability's rules_text under 80 characters. Be concise.
 
 Return ONLY valid JSON matching this exact schema:
 {
@@ -32,7 +33,7 @@ Return ONLY valid JSON matching this exact schema:
   "colors": ["Blue", "Black"],
   "type_line": "Legendary Creature — Billionaire Shitposter",
   "abilities": [
-    {"name": "Ability Name", "cost": "{T}", "rules_text": "MTG rules text"},
+    {"name": "Ability Name", "cost": "{T}", "rules_text": "Concise rules text here"},
     {"name": "Ability Name", "cost": null, "rules_text": "Static ability text"}
   ],
   "flavor_text": "The satirical quote",
@@ -71,7 +72,7 @@ export async function generateCardText(name: string, summary: string): Promise<C
 }
 
 export async function generateCardArt(artDescription: string): Promise<string> {
-  const prompt = `Fantasy trading card portrait in oil painting style with dramatic lighting. MTG card art aesthetic. Rich colors, detailed brushwork. ${artDescription}`
+  const prompt = `Fantasy trading card portrait in oil painting style with dramatic lighting. Renaissance master painting aesthetic. Rich colors, detailed brushwork. Do NOT include any text, watermarks, or logos in the image. ${artDescription}`
 
   const response = await client.images.generate({
     model: 'grok-imagine-image',
@@ -85,7 +86,7 @@ export async function generateCardArt(artDescription: string): Promise<string> {
   return url
 }
 
-const EVENT_SYSTEM_PROMPT = `You are a satirical trading card game designer creating Magic: The Gathering-style cards for CURRENT NEWS EVENTS. You write sharp, funny, topical content.
+const EVENT_SYSTEM_PROMPT = `You are a satirical trading card game designer creating collectible cards for CURRENT NEWS EVENTS. You write sharp, funny, topical content.
 
 RULES:
 - The card represents a major news event, not a person
@@ -93,7 +94,7 @@ RULES:
   - Sorcery: One-time events (bombings, elections, announcements)
   - Instant: Breaking news, sudden events
   - Enchantment: Ongoing situations (wars, economic trends, pandemics)
-- Abilities should reference the real-world impacts of the event in MTG rules-speak
+- Abilities should reference the real-world impacts of the event in trading card rules-speak
 - Flavor text should be a satirical take on the event
 - Mana cost 1-10 based on how impactful/world-changing the event is
 - Color identity based on the nature of the event:
@@ -104,6 +105,7 @@ RULES:
   Green: Environmental, growth, natural events
   Multi-color for complex events
 - Keep it as parody/satire — funny and sharp, never hateful or celebrating tragedy
+- IMPORTANT: Keep each ability's rules_text under 80 characters. Be concise.
 
 Return ONLY valid JSON matching this exact schema:
 {
@@ -112,7 +114,7 @@ Return ONLY valid JSON matching this exact schema:
   "colors": ["Red", "Black"],
   "type_line": "Sorcery",
   "abilities": [
-    {"name": "Ability Name", "cost": null, "rules_text": "MTG rules text describing the event's effect"}
+    {"name": "Ability Name", "cost": null, "rules_text": "Concise rules text describing the event's effect"}
   ],
   "flavor_text": "Satirical quote about the event",
   "flavor_attribution": "— Source",
