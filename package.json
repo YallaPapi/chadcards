@@ -9,7 +9,8 @@
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "seed": "npx tsx scripts/seed.ts"
+    "seed": "npx tsx scripts/seed.ts",
+    "seed:500": "npx tsx scripts/seed-500.ts"
   },
   "dependencies": {
     "@prisma/adapter-better-sqlite3": "^7.4.2",
