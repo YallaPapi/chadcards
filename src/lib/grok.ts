@@ -45,7 +45,7 @@ Return ONLY valid JSON matching this exact schema:
 
 export async function generateCardText(name: string, summary: string): Promise<CardData> {
   const response = await client.chat.completions.create({
-    model: 'grok-3-fast',
+    model: 'grok-3',
     messages: [
       { role: 'system', content: CARD_SYSTEM_PROMPT },
       { role: 'user', content: `Generate a trading card for this person:\n\nName: ${name}\n\nWikipedia summary:\n${summary}` },
@@ -74,13 +74,12 @@ export async function generateCardArt(artDescription: string): Promise<string> {
   const prompt = `Fantasy trading card portrait in oil painting style with dramatic lighting. MTG card art aesthetic. Rich colors, detailed brushwork. ${artDescription}`
 
   const response = await client.images.generate({
-    model: 'grok-2-image',
+    model: 'grok-imagine-image',
     prompt,
     n: 1,
-    size: '1024x1024',
   })
 
-  const url = response.data[0]?.url
+  const url = response.data?.[0]?.url
   if (!url) throw new Error('No image URL from Grok')
 
   return url
