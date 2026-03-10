@@ -1,0 +1,197 @@
+/* MTG Card Styles */
+.mtg-card {
+  --frame-color: #8B8B8B;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.mtg-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+}
+
+.mtg-card-small { width: 240px; font-size: 10px; }
+.mtg-card-medium { width: 320px; font-size: 13px; }
+.mtg-card-large { width: 440px; font-size: 16px; }
+
+.card-frame {
+  background: #1a1a1a;
+  border: 6px solid var(--frame-color);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.08), transparent);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.card-name {
+  font-weight: 700;
+  color: #e8e8e8;
+  font-size: 1.15em;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70%;
+}
+
+/* Mana symbols */
+.mana-cost {
+  display: flex;
+  gap: 3px;
+}
+
+.mana-symbol {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85em;
+  font-weight: 700;
+  border: 1px solid rgba(0,0,0,0.4);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.mana-symbol { background: #CBC2BF; color: #333; }
+.mana-w { background: #F9FAF4; color: #333; }
+.mana-u { background: #0E68AB; color: #fff; }
+.mana-b { background: #150B00; color: #ddd; border-color: #555; }
+.mana-r { background: #D3202A; color: #fff; }
+.mana-g { background: #00733E; color: #fff; }
+
+/* Art */
+.card-art {
+  margin: 4px 8px;
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+  background: #111;
+}
+
+.card-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Type line */
+.card-type {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 12px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.05), transparent);
+  border-top: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  font-size: 0.9em;
+  color: #ccc;
+}
+
+.rarity-symbol {
+  color: var(--frame-color);
+  font-size: 1.2em;
+}
+
+/* Text box */
+.card-text-box {
+  padding: 10px 12px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 140px;
+  background: rgba(0,0,0,0.2);
+}
+
+.ability {
+  margin-bottom: 8px;
+  line-height: 1.4;
+  color: #ddd;
+}
+
+.ability-cost {
+  font-weight: 700;
+  color: #f0c040;
+  margin-right: 4px;
+}
+
+.ability-name {
+  font-weight: 700;
+  color: #e8e8e8;
+}
+
+.ability-dash {
+  color: #888;
+}
+
+.ability-rules {
+  color: #ccc;
+}
+
+.flavor-text {
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding-top: 8px;
+  margin-top: 8px;
+}
+
+.flavor-quote {
+  font-style: italic;
+  color: #999;
+  font-size: 0.9em;
+  line-height: 1.4;
+  margin: 0 0 2px 0;
+}
+
+.flavor-attribution {
+  color: #777;
+  font-size: 0.85em;
+  text-align: right;
+  margin: 0;
+}
+
+/* Footer */
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 12px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.card-url {
+  font-size: 0.7em;
+  color: #555;
+  letter-spacing: 0.5px;
+}
+
+.card-pt {
+  background: var(--frame-color);
+  color: #111;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 1.1em;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
+/* Mythic glow effect */
+.mythic-glow .card-frame {
+  box-shadow: 0 0 20px rgba(255, 140, 0, 0.3), 0 4px 15px rgba(0, 0, 0, 0.6);
+}
+
+.mythic-glow:hover .card-frame {
+  box-shadow: 0 0 30px rgba(255, 140, 0, 0.5), 0 8px 25px rgba(0, 0, 0, 0.5);
+}
