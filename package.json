@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
@@ -13,9 +13,9 @@
     "seed:500": "npx tsx scripts/seed-500.ts"
   },
   "dependencies": {
-    "@prisma/adapter-better-sqlite3": "^7.4.2",
+    "@libsql/client": "^0.17.0",
+    "@prisma/adapter-libsql": "^7.4.2",
     "@prisma/client": "^7.4.2",
-    "better-sqlite3": "^12.6.2",
     "html2canvas": "^1.4.1",
     "next": "16.1.6",
     "openai": "^6.27.0",
