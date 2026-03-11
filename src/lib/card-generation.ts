@@ -1,4 +1,5 @@
 import { CardData } from '@/types/card'
+import { validateMtgTextStructure } from '@/lib/mtg-text-structure'
 
 const CATEGORY_KEYWORDS: Array<{ category: string; keywords: string[] }> = [
   {
@@ -100,6 +101,21 @@ const INVALID_RULES_PATTERNS = [
   /^\s*fame\b/i,
 ]
 
+function normalizeNullableText(value: string | null | undefined): string | null {
+  const normalized = value?.trim() ?? ''
+  return normalized ? normalized : null
+}
+
+function inferAbilityKind(ability: CardData['abilities'][number]): NonNullable<CardData['abilities'][number]['kind']> {
+  const rulesText = ability.rules_text.trim()
+
+  if (ability.cost) return 'activated'
+  if (/^(when|whenever|at)\b/i.test(rulesText)) return 'triggered'
+  if (!ability.name?.trim() && rulesText.length <= 18 && !/[.,]/.test(rulesText)) return 'keyword'
+  if (ability.name?.trim()) return 'named'
+  return 'static'
+}
+
 export function detectCategory(description: string, summary: string): string {
   const text = `${description} ${summary}`.toLowerCase()
 
@@ -133,11 +149,30 @@ export function validateGeneratedCardData(cardData: CardData): CardData {
     throw new Error('Generated card data is missing required fields')
   }
 
-  for (const ability of cardData.abilities) {
+  const normalizedCardData: CardData = {
+    ...cardData,
+    flavor_text: normalizeNullableText(cardData.flavor_text),
+    flavor_attribution: normalizeNullableText(cardData.flavor_attribution),
+    abilities: cardData.abilities.map((ability) => ({
+      ...ability,
+      kind: ability.kind ?? inferAbilityKind(ability),
+      name: normalizeNullableText(ability.name),
+      cost: normalizeNullableText(ability.cost),
+      rules_text: ability.rules_text.trim(),
+    })),
+  }
+
+  if (!normalizedCardData.flavor_text) {
+    normalizedCardData.flavor_attribution = null
+  }
+
+  for (const ability of normalizedCardData.abilities) {
     if (hasInvalidRulesText(ability.rules_text)) {
       throw new Error(`Generated rules text failed validation: ${ability.rules_text}`)
     }
   }
 
-  return cardData
+  validateMtgTextStructure(normalizedCardData)
+
+  return normalizedCardData
 }

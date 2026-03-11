@@ -1,90 +1,125 @@
 import OpenAI from 'openai'
-import { CardData } from '@/types/card'
+
+import type { CardData } from '@/types/card'
 import { validateGeneratedCardData } from '@/lib/card-generation'
 import { MIN_TONE_SCORE, scoreCardCandidate, selectBestCardCandidate } from '@/lib/card-tone'
 
-const client = new OpenAI({
-  apiKey: process.env.GROK_API_KEY,
-  baseURL: 'https://api.x.ai/v1',
-})
+function getClient(): OpenAI {
+  return new OpenAI({
+    apiKey: process.env.GROK_API_KEY,
+    baseURL: 'https://api.x.ai/v1',
+  })
+}
 
-const CARD_SYSTEM_PROMPT = `You are a satirical trading card game designer creating collectible cards for real public figures. Your writing should feel contemporary, hyper-online, ironic, sharp, and screenshot-worthy without sounding forced or stale.
+const CARD_SYSTEM_PROMPT = `You are a satirical trading card game designer creating collectible cards for real public figures.
 
-RULES:
-- Abilities must use proper trading card game rules-speak (tap symbols, keywords, etc.)
-- Each ability name should be a specific, quotable reference to something the person is known for
-- Flavor text should feel like something people would repost in a group chat, not a generic comedy caption
-- Power/Toughness should reflect real-world influence (Power) and resilience (Toughness) on a 0-10 scale
-- Mana cost should reflect how "expensive" or impactful this person is (1-10)
-- Color identity should match their personality archetype:
-  White: Order, institution, authority (politicians, executives)
-  Blue: Intelligence, technology, manipulation (tech founders, scientists)
-  Black: Ambition, ruthlessness, self-interest (moguls, controversial figures)
-  Red: Chaos, passion, impulse (entertainers, provocateurs)
-  Green: Growth, authenticity, nature (athletes, activists)
-  Multi-color for people who span categories
-- Type should be "Legendary Creature - [Funny Class] [Funny Subclass]"
-- Keep it as parody/satire - funny and sharp, never hateful
-- Generate 2-3 abilities
-- IMPORTANT: Keep each ability's rules_text under 80 characters. Be concise.
-- NEVER use fake game vocabulary like "memes", "fame", "interrupt", "silence target", or "skip a turn".
-- Use only card-like actions such as create, draw, discard, exile, destroy, counter, tap, untap, gain, lose, return, and get +N/+N.
-- NEVER use stale filler like "probably", "I'm not just...", "the future is...", "viral aura", or generic Facebook-boomer punchlines.
-- Prefer contemporary internet-native irony over generic satire. The joke should feel current, culturally literate, and specific to the person.
-- Avoid lazy "bro", "hot takes", "zero filter", or "overheard in the group chat" phrasing unless it is genuinely fresh and specific.
-- BAD flavor example: "Bro, have you even tried elk meat?".
-- GOOD flavor example: "This somehow did numbers with divorced guys, VC reply-guys, and UFC TikTok at the same time."
+Your output should read like a real printed trading card, not a custom-card meme template.
+
+TEXT BOX ANATOMY:
+- Build the text box out of 1-3 total rules entries.
+- A rules entry can be one of:
+  - keyword/static line
+  - activated ability
+  - triggered ability
+  - named ability line, but only when it genuinely adds something
+- Do NOT force every rules entry to have a bespoke title.
+- Flavor text is optional.
+- Flavor text is a separate italic quote/tagline at the bottom of the box. It is never rules text.
+- Text-heavy cards should omit flavor text entirely.
+- Never use fake attribution filler like "probably", "source:", or "overheard in the group chat".
+
+TONE:
+- Contemporary, internet-literate, ironic, sharp, and specific.
+- The joke should feel current and shareable, not like a stale Facebook caption.
+- Avoid generic "bro", "hot takes", "the future", "viral aura", or other boomer-slop phrasing.
+- Be specific to the person.
+
+CARD RULES:
+- Use proper trading card game rules-speak.
+- NEVER use fake rules vocabulary like "memes", "fame", "interrupt", "silence target", or "skip a turn".
+- Use card-like actions such as create, draw, discard, exile, destroy, counter, tap, untap, gain, lose, return, mill, surveil, and get +N/+N.
+- Keep each rules_text under 95 characters.
+- Mana cost should reflect how impactful the person feels, from 1-10.
+- Power/Toughness should reflect influence and resilience, from 0-10.
+- Color identity should match the person's archetype.
+- Type should be "Legendary Creature - [Class] [Subclass]".
+- Keep it sharp, satirical, and non-hateful.
 
 Return ONLY valid JSON matching this exact schema:
 {
   "name": "Full Name",
   "mana_cost": 5,
   "colors": ["Blue", "Black"],
-  "type_line": "Legendary Creature - Billionaire Shitposter",
+  "type_line": "Legendary Creature - Platform Tyrant",
   "abilities": [
-    {"name": "Ability Name", "cost": "{T}", "rules_text": "Concise rules text here"},
-    {"name": "Ability Name", "cost": null, "rules_text": "Static ability text"}
+    {"kind": "keyword", "name": null, "cost": null, "rules_text": "Menace"},
+    {"kind": "triggered", "name": null, "cost": null, "rules_text": "Whenever you draw your second card each turn, each opponent loses 1 life."},
+    {"kind": "activated", "name": null, "cost": "{2}{U}", "rules_text": "Draw a card, then discard a card."}
   ],
-  "flavor_text": "The satirical quote",
-  "flavor_attribution": "- Source",
-  "power": 7,
-  "toughness": 3,
+  "flavor_text": null,
+  "flavor_attribution": null,
+  "power": 5,
+  "toughness": 4,
   "rarity": "mythic",
-  "art_description": "2-3 sentence description of card art in fantasy oil painting style"
-}`
+  "art_description": "2-3 sentence description of fantasy oil painting card art"
+}
+
+If the card is light enough for flavor text, use:
+- "flavor_text": a separate quote/tagline
+- "flavor_attribution": a clean attribution or null
+
+BAD STRUCTURE EXAMPLE:
+- Three named abilities plus flavor text on a dense creature.
+
+GOOD STRUCTURE EXAMPLE:
+- One keyword line, one triggered ability, one activated ability, and no flavor text.`
+
+function extractJsonObject(content: string): CardData {
+  const jsonMatch = content.match(/\{[\s\S]*\}/)
+  if (!jsonMatch) {
+    throw new Error('No JSON found in Grok response')
+  }
+
+  return JSON.parse(jsonMatch[0]) as CardData
+}
 
 export async function generateCardText(name: string, summary: string): Promise<CardData> {
   const candidates: CardData[] = []
+  const client = getClient()
 
   for (let attempt = 0; attempt < 6; attempt++) {
     const extraGuidance = attempt === 0
       ? ''
-      : '\n\nPrevious output was rejected or too bland. Be more specific, more contemporary, more internet-native, and less generic.'
+      : '\n\nPrevious output failed validation or felt structurally wrong. Use fewer named abilities, omit flavor on dense cards, and make the copy more specific.'
 
     const response = await client.chat.completions.create({
       model: 'grok-3',
       messages: [
         { role: 'system', content: CARD_SYSTEM_PROMPT },
-        { role: 'user', content: `Generate a trading card for this person:\n\nName: ${name}\n\nWikipedia summary:\n${summary}${extraGuidance}` },
+        {
+          role: 'user',
+          content: `Generate a collectible card for this person.\n\nName: ${name}\n\nWikipedia summary:\n${summary}${extraGuidance}`,
+        },
       ],
       temperature: 1,
     })
 
     const content = response.choices[0]?.message?.content
-    if (!content) throw new Error('No response from Grok')
-
-    const jsonMatch = content.match(/\{[\s\S]*\}/)
-    if (!jsonMatch) throw new Error('No JSON found in Grok response')
-
-    const parsed = JSON.parse(jsonMatch[0]) as CardData
+    if (!content) {
+      throw new Error('No response from Grok')
+    }
 
     try {
+      const parsed = extractJsonObject(content)
       const validated = validateGeneratedCardData(parsed)
+
       if (scoreCardCandidate(validated) >= MIN_TONE_SCORE) {
         candidates.push(validated)
       }
     } catch (error) {
-      if (attempt === 5 && candidates.length === 0) throw error
+      if (attempt === 5 && candidates.length === 0) {
+        throw error
+      }
     }
   }
 
@@ -96,6 +131,7 @@ export async function generateCardText(name: string, summary: string): Promise<C
 }
 
 export async function generateCardArt(artDescription: string): Promise<string> {
+  const client = getClient()
   const prompt = `Fantasy trading card portrait in oil painting style with dramatic lighting. Renaissance master painting aesthetic. Rich colors, detailed brushwork. Do NOT include any text, watermarks, or logos in the image. ${artDescription}`
 
   const response = await client.images.generate({
@@ -105,31 +141,20 @@ export async function generateCardArt(artDescription: string): Promise<string> {
   })
 
   const url = response.data?.[0]?.url
-  if (!url) throw new Error('No image URL from Grok')
+  if (!url) {
+    throw new Error('No image URL from Grok')
+  }
 
   return url
 }
 
-const EVENT_SYSTEM_PROMPT = `You are a satirical trading card game designer creating collectible cards for CURRENT NEWS EVENTS. You write sharp, funny, topical content.
+const EVENT_SYSTEM_PROMPT = `You are a satirical trading card game designer creating collectible cards for current news events.
 
-RULES:
-- The card represents a major news event, not a person
-- Type should be "Sorcery", "Instant", or "Enchantment" (not Creature) - pick what fits:
-  - Sorcery: One-time events (bombings, elections, announcements)
-  - Instant: Breaking news, sudden events
-  - Enchantment: Ongoing situations (wars, economic trends, pandemics)
-- Abilities should reference the real-world impacts of the event in trading card rules-speak
-- Flavor text should be a satirical take on the event
-- Mana cost 1-10 based on how impactful/world-changing the event is
-- Color identity based on the nature of the event:
-  White: Government/institutional actions, peace deals
-  Blue: Technology, intelligence, manipulation
-  Black: Death, destruction, corruption, power grabs
-  Red: War, chaos, destruction, passion
-  Green: Environmental, growth, natural events
-  Multi-color for complex events
-- Keep it as parody/satire - funny and sharp, never hateful or celebrating tragedy
-- IMPORTANT: Keep each ability's rules_text under 80 characters. Be concise.
+Build event cards with 1-2 rules entries total. Keep the text box structurally clean.
+- Use "Instant", "Sorcery", or "Enchantment" as the type.
+- Rules text should describe the event's impact in card-like language.
+- Flavor text is optional and should be omitted on dense cards.
+- No fake attribution filler.
 
 Return ONLY valid JSON matching this exact schema:
 {
@@ -138,17 +163,18 @@ Return ONLY valid JSON matching this exact schema:
   "colors": ["Red", "Black"],
   "type_line": "Sorcery",
   "abilities": [
-    {"name": "Ability Name", "cost": null, "rules_text": "Concise rules text describing the event's effect"}
+    {"kind": "static", "name": null, "cost": null, "rules_text": "Each opponent sacrifices a creature."}
   ],
-  "flavor_text": "Satirical quote about the event",
-  "flavor_attribution": "- Source",
+  "flavor_text": null,
+  "flavor_attribution": null,
   "power": 0,
   "toughness": 0,
   "rarity": "mythic",
-  "art_description": "2-3 sentence description of card art depicting the event in dramatic fantasy oil painting style"
+  "art_description": "2-3 sentence description of dramatic fantasy oil painting card art"
 }`
 
 export async function generateEventCard(eventDescription: string): Promise<CardData> {
+  const client = getClient()
   const response = await client.chat.completions.create({
     model: 'grok-3',
     messages: [
@@ -159,16 +185,11 @@ export async function generateEventCard(eventDescription: string): Promise<CardD
   })
 
   const content = response.choices[0]?.message?.content
-  if (!content) throw new Error('No response from Grok')
-
-  const jsonMatch = content.match(/\{[\s\S]*\}/)
-  if (!jsonMatch) throw new Error('No JSON found in Grok response')
-
-  const parsed = JSON.parse(jsonMatch[0]) as CardData
-  if (!parsed.name || !parsed.colors || !parsed.abilities) {
-    throw new Error('Invalid event card data from Grok')
+  if (!content) {
+    throw new Error('No response from Grok')
   }
 
+  const parsed = validateGeneratedCardData(extractJsonObject(content))
   parsed.power = 0
   parsed.toughness = 0
 
@@ -176,20 +197,28 @@ export async function generateEventCard(eventDescription: string): Promise<CardD
 }
 
 export async function getTrendingEvents(): Promise<string[]> {
+  const client = getClient()
   const response = await client.chat.completions.create({
     model: 'grok-3',
     messages: [
-      { role: 'system', content: 'You are a news analyst. Return ONLY a JSON array of 10 current major news events happening right now. Each should be a short description (1-2 sentences). Focus on the biggest, most viral, most meme-worthy events. Include a mix of politics, tech, entertainment, sports, and world events.' },
+      {
+        role: 'system',
+        content: 'You are a news analyst. Return ONLY a JSON array of 10 current major news events happening right now. Each should be a short description (1-2 sentences). Focus on the biggest, most viral, most meme-worthy events. Include a mix of politics, tech, entertainment, sports, and world events.',
+      },
       { role: 'user', content: 'What are the top 10 biggest news events happening right now?' },
     ],
     temperature: 0.7,
   })
 
   const content = response.choices[0]?.message?.content
-  if (!content) throw new Error('No response from Grok')
+  if (!content) {
+    throw new Error('No response from Grok')
+  }
 
   const jsonMatch = content.match(/\[[\s\S]*\]/)
-  if (!jsonMatch) throw new Error('No JSON array found in Grok response')
+  if (!jsonMatch) {
+    throw new Error('No JSON array found in Grok response')
+  }
 
   return JSON.parse(jsonMatch[0]) as string[]
 }

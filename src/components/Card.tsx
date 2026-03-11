@@ -1,6 +1,6 @@
 'use client'
 
-import { Card as CardType, getCardTheme, MANA_SYMBOL_COLORS, MTG_COLOR_THEMES, MtgColor } from '@/types/card'
+import { Card as CardType, CardAbility, getCardTheme, MANA_SYMBOL_COLORS, MTG_COLOR_THEMES, MtgColor } from '@/types/card'
 import { AutoTextSize } from 'auto-text-size'
 import { getCardArtUrl } from '@/lib/card-art'
 import { BRAND_DOMAIN } from '@/lib/brand'
@@ -48,12 +48,19 @@ function ManaCost({ cost, colors }: { cost: number; colors: string[] }) {
   )
 }
 
-function AbilityText({ ability }: { ability: { name: string; cost: string | null; rules_text: string } }) {
+function AbilityText({ ability }: { ability: CardAbility }) {
+  const abilityName = ability.name?.trim()
+  const abilityKind = ability.kind ?? 'static'
+
   return (
-    <div className="ability">
+    <div className={`ability ability-${abilityKind} ${abilityName ? 'ability-named' : 'ability-plain'}`}>
       {ability.cost && <span className="ability-cost">{ability.cost}</span>}
-      <span className="ability-name">{ability.name}</span>
-      <span className="ability-dash"> - </span>
+      {abilityName && (
+        <>
+          <span className="ability-name">{abilityName}</span>
+          <span className="ability-dash"> - </span>
+        </>
+      )}
       <span className="ability-rules">{ability.rules_text}</span>
     </div>
   )
@@ -106,12 +113,14 @@ export default function Card({ card, size = 'medium', onClick }: CardProps) {
                     <AbilityText key={i} ability={a} />
                   ))}
                 </div>
-                {card.flavor_text && (
+                {card.flavor_text?.trim() && (
                   <>
                     <hr className="flavor-separator" />
                     <div className="flavor-text">
                       <p className="flavor-quote">&ldquo;{card.flavor_text}&rdquo;</p>
-                      <p className="flavor-attribution">{card.flavor_attribution}</p>
+                      {card.flavor_attribution?.trim() && (
+                        <p className="flavor-attribution">{card.flavor_attribution}</p>
+                      )}
                     </div>
                   </>
                 )}

@@ -1,5 +1,6 @@
 import CardGrid from '@/components/CardGrid'
 import { prisma } from '@/lib/db'
+import type { CardAbility } from '@/types/card'
 
 async function getCards(searchParams: { category?: string; color?: string; rarity?: string; sort?: string }) {
   const where: any = {}
@@ -21,9 +22,9 @@ async function getCards(searchParams: { category?: string; color?: string; rarit
     mana_cost: c.manaCost,
     colors: JSON.parse(c.colors),
     type_line: c.typeLine,
-    abilities: JSON.parse(c.abilities),
-    flavor_text: c.flavorText,
-    flavor_attribution: c.flavorAttribution,
+    abilities: JSON.parse(c.abilities) as CardAbility[],
+    flavor_text: c.flavorText || null,
+    flavor_attribution: c.flavorAttribution || null,
     power: c.power,
     toughness: c.toughness,
     rarity: c.rarity as 'mythic' | 'rare' | 'uncommon',

@@ -1,5 +1,8 @@
+export type CardTextLineKind = 'keyword' | 'static' | 'activated' | 'triggered' | 'named' | 'modal'
+
 export interface CardAbility {
-  name: string
+  kind?: CardTextLineKind
+  name?: string | null
   cost: string | null // "{T}", "{2}{U}", or null for static
   rules_text: string
 }
@@ -10,8 +13,8 @@ export interface CardData {
   colors: string[]
   type_line: string
   abilities: CardAbility[]
-  flavor_text: string
-  flavor_attribution: string
+  flavor_text: string | null
+  flavor_attribution: string | null
   power: number
   toughness: number
   rarity: 'mythic' | 'rare' | 'uncommon'

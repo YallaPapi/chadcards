@@ -2,6 +2,7 @@ import { prisma } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import Card from '@/components/Card'
 import CardDetailActions from '@/components/CardDetailActions'
+import type { CardAbility } from '@/types/card'
 
 export default async function CardPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -15,9 +16,9 @@ export default async function CardPage({ params }: { params: Promise<{ id: strin
     mana_cost: dbCard.manaCost,
     colors: JSON.parse(dbCard.colors) as string[],
     type_line: dbCard.typeLine,
-    abilities: JSON.parse(dbCard.abilities) as { name: string; cost: string | null; rules_text: string }[],
-    flavor_text: dbCard.flavorText,
-    flavor_attribution: dbCard.flavorAttribution,
+    abilities: JSON.parse(dbCard.abilities) as CardAbility[],
+    flavor_text: dbCard.flavorText || null,
+    flavor_attribution: dbCard.flavorAttribution || null,
     power: dbCard.power,
     toughness: dbCard.toughness,
     rarity: dbCard.rarity as 'mythic' | 'rare' | 'uncommon',

@@ -1,7 +1,24 @@
-import { describe, it, expect } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+
+afterEach(() => {
+  vi.resetModules()
+})
 
 // Test the JSON extraction logic that generateCardText uses
 describe('Grok response parsing', () => {
+  it('does not require API credentials at module import time', async () => {
+    const originalKey = process.env.GROK_API_KEY
+    const originalOpenAiKey = process.env.OPENAI_API_KEY
+
+    delete process.env.GROK_API_KEY
+    delete process.env.OPENAI_API_KEY
+
+    await expect(import('../grok')).resolves.toBeTruthy()
+
+    process.env.GROK_API_KEY = originalKey
+    process.env.OPENAI_API_KEY = originalOpenAiKey
+  })
+
   it('extracts JSON from plain response', () => {
     const response = '{"name": "Test Person", "mana_cost": 5, "colors": ["Blue"], "type_line": "Legendary Creature — Test", "abilities": [{"name": "Test", "cost": null, "rules_text": "Test"}], "flavor_text": "Test", "flavor_attribution": "— Test", "power": 5, "toughness": 5, "rarity": "rare", "art_description": "A test"}'
     const match = response.match(/\{[\s\S]*\}/)

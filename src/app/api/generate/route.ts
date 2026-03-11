@@ -20,6 +20,8 @@ export async function POST(request: NextRequest) {
         ...existing,
         colors: JSON.parse(existing.colors),
         abilities: JSON.parse(existing.abilities),
+        flavorText: existing.flavorText || null,
+        flavorAttribution: existing.flavorAttribution || null,
       })
     }
 
@@ -43,8 +45,8 @@ export async function POST(request: NextRequest) {
         colors: JSON.stringify(cardData.colors),
         typeLine: cardData.type_line,
         abilities: JSON.stringify(cardData.abilities),
-        flavorText: cardData.flavor_text,
-        flavorAttribution: cardData.flavor_attribution,
+        flavorText: cardData.flavor_text ?? '',
+        flavorAttribution: cardData.flavor_attribution ?? '',
         power: cardData.power,
         toughness: cardData.toughness,
         rarity: cardData.rarity,

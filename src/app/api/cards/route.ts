@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import type { CardAbility } from '@/types/card'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
@@ -27,7 +28,9 @@ export async function GET(request: NextRequest) {
       cards.map((c) => ({
         ...c,
         colors: JSON.parse(c.colors),
-        abilities: JSON.parse(c.abilities),
+        abilities: JSON.parse(c.abilities) as CardAbility[],
+        flavorText: c.flavorText || null,
+        flavorAttribution: c.flavorAttribution || null,
       }))
     )
   } catch (error: any) {

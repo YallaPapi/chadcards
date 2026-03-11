@@ -1,4 +1,5 @@
 import { CardData } from '@/types/card'
+import { estimateTextBoxDensity, getMtgTextStructureIssues } from '@/lib/mtg-text-structure'
 
 const BORING_PATTERNS = [
   /\bprobably\b/i,
@@ -39,10 +40,15 @@ const SHARP_SIGNALS = [
 export function scoreCardCandidate(card: CardData): number {
   let score = 0
 
-  const flavor = `${card.flavor_text} ${card.flavor_attribution}`.trim()
-  const abilityNames = card.abilities.map((ability) => ability.name).join(' ')
+  const flavorText = card.flavor_text ?? ''
+  const flavorAttribution = card.flavor_attribution ?? ''
+  const flavor = `${flavorText} ${flavorAttribution}`.trim()
+  const abilityNames = card.abilities.map((ability) => ability.name ?? '').join(' ')
   const rules = card.abilities.map((ability) => ability.rules_text).join(' ')
   const combined = `${card.type_line} ${abilityNames} ${rules} ${flavor}`
+  const structureIssues = getMtgTextStructureIssues(card)
+  const density = estimateTextBoxDensity(card)
+  const namedAbilityCount = card.abilities.filter((ability) => ability.name?.trim()).length
 
   for (const pattern of BORING_PATTERNS) {
     if (pattern.test(combined)) score -= 8
@@ -53,14 +59,23 @@ export function scoreCardCandidate(card: CardData): number {
   }
 
   for (const ability of card.abilities) {
-    if (ability.name.split(/\s+/).length >= 2) score += 1
-    if (/[A-Z]/.test(ability.name)) score += 1
+    const abilityName = ability.name?.trim() ?? ''
+
+    if (abilityName.split(/\s+/).filter(Boolean).length >= 2) score += 1
+    if (abilityName && /[A-Z]/.test(abilityName)) score += 1
     if (ability.rules_text.length >= 28 && ability.rules_text.length <= 85) score += 1
+    if (!abilityName && ability.kind && ability.kind !== 'named') score += 2
+    if (ability.kind === 'keyword' && ability.rules_text.length <= 18) score += 2
   }
 
-  if (card.flavor_text.length >= 35 && card.flavor_text.length <= 110) score += 3
-  if (/[.!?]/.test(card.flavor_text)) score += 1
+  if (flavorText.length >= 35 && flavorText.length <= 110) score += 3
+  if (/[.!?]/.test(flavorText)) score += 1
   if (card.type_line.split(/\s+/).length >= 4) score += 1
+  if (density <= 1 && !flavorText) score += 2
+  if (namedAbilityCount > 2) score -= (namedAbilityCount - 2) * 6
+  if (namedAbilityCount === card.abilities.length && namedAbilityCount >= 3) score -= 8
+  if (structureIssues.length === 0) score += 3
+  if (structureIssues.length > 0) score -= structureIssues.length * 4
 
   return score
 }
