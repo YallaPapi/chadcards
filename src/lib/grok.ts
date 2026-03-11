@@ -32,6 +32,8 @@ RULES:
 - NEVER use stale filler like "probably", "I'm not just...", "the future is...", "viral aura", or generic Facebook-boomer punchlines.
 - Prefer contemporary internet-native irony over generic satire. The joke should feel current, culturally literate, and specific to the person.
 - Avoid lazy "bro", "hot takes", "zero filter", or "overheard in the group chat" phrasing unless it is genuinely fresh and specific.
+- BAD flavor example: "Bro, have you even tried elk meat?".
+- GOOD flavor example: "This somehow did numbers with divorced guys, VC reply-guys, and UFC TikTok at the same time."
 
 Return ONLY valid JSON matching this exact schema:
 {

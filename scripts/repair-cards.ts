@@ -16,7 +16,11 @@ function createPrismaClient() {
 const prisma = createPrismaClient()
 
 async function main() {
+  const targetNames = process.argv.slice(2)
   const cards = await prisma.card.findMany({
+    where: targetNames.length > 0
+      ? { name: { in: targetNames } }
+      : undefined,
     orderBy: { createdAt: 'asc' },
   })
 
