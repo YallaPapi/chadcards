@@ -46,6 +46,21 @@ describe('scoreCardCandidate', () => {
   it('heavily penalizes stale filler like probably and viral aura', () => {
     expect(scoreCardCandidate(blandCandidate)).toBeLessThan(0)
   })
+
+  it('penalizes lazy podcast-bro voice and overheard-attribution filler', () => {
+    expect(
+      scoreCardCandidate({
+        ...blandCandidate,
+        flavor_text: 'Bro, have you even tried elk meat on a carnivore diet?',
+        flavor_attribution: '- Overheard in the sauna',
+        abilities: [
+          { name: 'DMT Epiphany', cost: '{T}', rules_text: 'Draw a card, then discard a card.' },
+          { name: 'Alpha Brain Stack', cost: '{2}{R}', rules_text: 'Joe Rogan gets +2/+2 until end of turn.' },
+          { name: 'Fear Factor Flashback', cost: null, rules_text: 'Creatures you control have haste.' },
+        ],
+      })
+    ).toBeLessThan(0)
+  })
 })
 
 describe('selectBestCardCandidate', () => {

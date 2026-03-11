@@ -9,7 +9,17 @@ const BORING_PATTERNS = [
   /\bpodcast power\b/i,
   /\bbig idea\b/i,
   /\bthe future\b/i,
-  /\bbro, have you ever\b/i,
+  /\bbro\b/i,
+  /\bhot takes?\b/i,
+  /\boverheard\b/i,
+  /\bsauna\b/i,
+  /\bzero filter\b/i,
+  /\bpromo code\b/i,
+  /\bflashback\b/i,
+  /\bstack\b/i,
+  /\bmode\b/i,
+  /\bmagnet\b/i,
+  /\bepiphany\b/i,
 ]
 
 const SHARP_SIGNALS = [
@@ -35,7 +45,7 @@ export function scoreCardCandidate(card: CardData): number {
   const combined = `${card.type_line} ${abilityNames} ${rules} ${flavor}`
 
   for (const pattern of BORING_PATTERNS) {
-    if (pattern.test(combined)) score -= 5
+    if (pattern.test(combined)) score -= 8
   }
 
   for (const pattern of SHARP_SIGNALS) {
@@ -54,6 +64,8 @@ export function scoreCardCandidate(card: CardData): number {
 
   return score
 }
+
+export const MIN_TONE_SCORE = 6
 
 export function selectBestCardCandidate(candidates: CardData[]): CardData {
   if (candidates.length === 0) {

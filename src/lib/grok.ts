@@ -1,7 +1,7 @@
 import OpenAI from 'openai'
 import { CardData } from '@/types/card'
 import { validateGeneratedCardData } from '@/lib/card-generation'
-import { selectBestCardCandidate } from '@/lib/card-tone'
+import { MIN_TONE_SCORE, scoreCardCandidate, selectBestCardCandidate } from '@/lib/card-tone'
 
 const client = new OpenAI({
   apiKey: process.env.GROK_API_KEY,
@@ -31,6 +31,7 @@ RULES:
 - Use only card-like actions such as create, draw, discard, exile, destroy, counter, tap, untap, gain, lose, return, and get +N/+N.
 - NEVER use stale filler like "probably", "I'm not just...", "the future is...", "viral aura", or generic Facebook-boomer punchlines.
 - Prefer contemporary internet-native irony over generic satire. The joke should feel current, culturally literate, and specific to the person.
+- Avoid lazy "bro", "hot takes", "zero filter", or "overheard in the group chat" phrasing unless it is genuinely fresh and specific.
 
 Return ONLY valid JSON matching this exact schema:
 {
@@ -53,10 +54,10 @@ Return ONLY valid JSON matching this exact schema:
 export async function generateCardText(name: string, summary: string): Promise<CardData> {
   const candidates: CardData[] = []
 
-  for (let attempt = 0; attempt < 4; attempt++) {
+  for (let attempt = 0; attempt < 6; attempt++) {
     const extraGuidance = attempt === 0
       ? ''
-      : '\n\nPrevious output was rejected or too bland. Be more specific, more contemporary, and more ironically online.'
+      : '\n\nPrevious output was rejected or too bland. Be more specific, more contemporary, more internet-native, and less generic.'
 
     const response = await client.chat.completions.create({
       model: 'grok-3',
@@ -76,9 +77,12 @@ export async function generateCardText(name: string, summary: string): Promise<C
     const parsed = JSON.parse(jsonMatch[0]) as CardData
 
     try {
-      candidates.push(validateGeneratedCardData(parsed))
+      const validated = validateGeneratedCardData(parsed)
+      if (scoreCardCandidate(validated) >= MIN_TONE_SCORE) {
+        candidates.push(validated)
+      }
     } catch (error) {
-      if (attempt === 3 && candidates.length === 0) throw error
+      if (attempt === 5 && candidates.length === 0) throw error
     }
   }
 
