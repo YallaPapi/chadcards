@@ -1,8 +1,9 @@
 'use client'
 
-import { Card as CardType, getCardTheme, MANA_SYMBOL_COLORS, RARITY_COLORS, MTG_COLOR_THEMES, MtgColor } from '@/types/card'
+import { Card as CardType, getCardTheme, MANA_SYMBOL_COLORS, MTG_COLOR_THEMES, MtgColor } from '@/types/card'
 import { AutoTextSize } from 'auto-text-size'
 import { getCardArtUrl } from '@/lib/card-art'
+import { BRAND_DOMAIN } from '@/lib/brand'
 import './Card.css'
 
 interface CardProps {
@@ -52,7 +53,7 @@ function AbilityText({ ability }: { ability: { name: string; cost: string | null
     <div className="ability">
       {ability.cost && <span className="ability-cost">{ability.cost}</span>}
       <span className="ability-name">{ability.name}</span>
-      <span className="ability-dash"> — </span>
+      <span className="ability-dash"> - </span>
       <span className="ability-rules">{ability.rules_text}</span>
     </div>
   )
@@ -81,18 +82,15 @@ export default function Card({ card, size = 'medium', onClick }: CardProps) {
     >
       <div className="card-frame">
         <div className="card-inner">
-          {/* Header: Name + Mana */}
           <div className="card-header">
             <span className="card-name">{card.name}</span>
             <ManaCost cost={card.mana_cost} colors={card.colors} />
           </div>
 
-          {/* Art window */}
           <div className="card-art">
             <img src={artUrl} alt={card.name} loading="lazy" />
           </div>
 
-          {/* Type line */}
           <div className="card-type">
             <span>{card.type_line}</span>
             <span className={`rarity-symbol ${rarityClass}`}>
@@ -100,7 +98,6 @@ export default function Card({ card, size = 'medium', onClick }: CardProps) {
             </span>
           </div>
 
-          {/* Text box — parchment background, auto-scaled text */}
           <div className="card-text-box">
             <AutoTextSize mode="box" minFontSizePx={limits.min} maxFontSizePx={limits.max}>
               <div className="card-text-box-inner">
@@ -122,9 +119,8 @@ export default function Card({ card, size = 'medium', onClick }: CardProps) {
             </AutoTextSize>
           </div>
 
-          {/* Footer: URL + P/T */}
           <div className="card-footer">
-            <span className="card-url">infamouscards.com</span>
+            <span className="card-url">{BRAND_DOMAIN}</span>
             <div className="card-pt">
               <span>{card.power}/{card.toughness}</span>
             </div>
